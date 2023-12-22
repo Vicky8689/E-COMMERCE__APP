@@ -2,6 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth import authenticate,login,logout
+
 # Create your views here.
 
 def signup(request):
@@ -38,10 +40,34 @@ def signup(request):
 
 def handlelogin(request):
   
+  if request.method == "POST":
+     
+     
+     username=request.POST['email']
+     userpassword = request.POST['pass1']
+     myuser=authenticate(username=username,password = userpassword ) #if username or password any one is wrong than myuser give none
+
+     if myuser is not None:
+        
+        login(request,myuser)
+        messages.success(request,"Login Suuccesfull")
+        return redirect('/')
+     else:
+        
+        messages.error(request,"Invalid Credentials")
+        return redirect('/auth/login') 
+        
+  
+
+
   return render(request,"login.html")
 
 
 
 
 def handlelogout(request):
+  logout(request)
+  messages.info(request,"Logout Success")
+
+
   return redirect('/auth/login')
